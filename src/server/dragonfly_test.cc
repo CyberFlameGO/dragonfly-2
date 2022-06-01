@@ -411,6 +411,11 @@ TEST_F(DflyEngineTest, OOM) {
   }
 }
 
+TEST_F(DflyEngineTest, PSubscribe) {
+  auto resp = pp_->at(1)->Await([&] { return Run({"psubscribe", "a*", "b*"}); });
+  EXPECT_THAT(resp, ArrLen(3));
+}
+
 // TODO: to test transactions with a single shard since then all transactions become local.
 // To consider having a parameter in dragonfly engine controlling number of shards
 // unconditionally from number of cpus. TO TEST BLPOP under multi for single/multi argument case.

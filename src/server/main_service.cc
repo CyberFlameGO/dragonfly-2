@@ -959,6 +959,17 @@ void Service::Unsubscribe(CmdArgList args, ConnectionContext* cntx) {
   cntx->ChangeSubscription(false, true, std::move(args));
 }
 
+void Service::PSubscribe(CmdArgList args, ConnectionContext* cntx) {
+  args.remove_prefix(1);
+  cntx->ChangePSub(true, true, args);
+}
+
+void Service::PUnsubscribe(CmdArgList args, ConnectionContext* cntx) {
+  args.remove_prefix(1);
+
+  cntx->ChangePSub(false, true, args);
+}
+
 // Not a real implementation. Serves as a decorator to accept some function commands
 // for testing.
 void Service::Function(CmdArgList args, ConnectionContext* cntx) {
@@ -1024,6 +1035,8 @@ void Service::RegisterCommands() {
             << CI{"PUBLISH", CO::LOADING | CO::FAST, 3, 0, 0, 0}.MFUNC(Publish)
             << CI{"SUBSCRIBE", CO::NOSCRIPT | CO::LOADING, -2, 0, 0, 0}.MFUNC(Subscribe)
             << CI{"UNSUBSCRIBE", CO::NOSCRIPT | CO::LOADING, -2, 0, 0, 0}.MFUNC(Unsubscribe)
+            << CI{"PSUBSCRIBE", CO::NOSCRIPT | CO::LOADING, -2, 0, 0, 0}.MFUNC(PSubscribe)
+            << CI{"PUNSUBSCRIBE", CO::NOSCRIPT | CO::LOADING, -2, 0, 0, 0}.MFUNC(PUnsubscribe)
             << CI{"FUNCTION", CO::NOSCRIPT, 2, 0, 0, 0}.MFUNC(Function);
 
   StringFamily::Register(&registry_);

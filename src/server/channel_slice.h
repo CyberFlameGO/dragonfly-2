@@ -31,8 +31,11 @@ class ChannelSlice {
 
   std::vector<Subscriber> FetchSubscribers(std::string_view channel);
 
-  void RemoveSubscription(std::string_view channel, ConnectionContext* me);
   void AddSubscription(std::string_view channel, ConnectionContext* me, uint32_t thread_id);
+  void RemoveSubscription(std::string_view channel, ConnectionContext* me);
+
+  void AddGlobPattern(std::string_view pattern, ConnectionContext* me, uint32_t thread_id);
+  void RemoveGlobPattern(std::string_view pattern, ConnectionContext* me);
 
  private:
   struct SubscriberInternal {
@@ -40,9 +43,13 @@ class ChannelSlice {
 
     SubscriberInternal(uint32_t tid) : thread_id(tid) {}
   };
+  using SubsribeMap = absl::flat_hash_map<ConnectionContext*, SubscriberInternal>;
+
+  static void CopySubsribers(const SubsribeMap& src, std::vector<Subscriber>* dest);
+
 
   struct Channel {
-    absl::flat_hash_map<ConnectionContext*, SubscriberInternal> subscribers;
+    SubsribeMap subscribers;
   };
 
   absl::flat_hash_map<std::string, std::unique_ptr<Channel>> channels_;
